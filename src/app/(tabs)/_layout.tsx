@@ -29,7 +29,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name='index'
                 options={{
-                    title: 'Tab One',
+                    title: 'CinaSwipe',
                     tabBarIcon: ({ color }) => (
                         <TabBarIcon name='code' color={color} />
                     ),
@@ -57,7 +57,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name='two'
                 options={{
-                    title: 'Tab Two',
+                    title: 'Login',
                     tabBarIcon: ({ color }) => (
                         <TabBarIcon name='code' color={color} />
                     ),
