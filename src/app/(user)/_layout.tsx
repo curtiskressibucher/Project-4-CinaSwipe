@@ -12,7 +12,7 @@ function TabBarIcon(props: {
     name: React.ComponentProps<typeof FontAwesome>['name'];
     color: string;
 }) {
-    return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+    return <FontAwesome size={20} style={{ marginBottom: -3 }} {...props} />;
 }
 
 export default function TabLayout() {
@@ -27,22 +27,25 @@ export default function TabLayout() {
                 headerShown: useClientOnlyValue(false, true),
             }}>
             <Tabs.Screen
+                name='movies'
+                options={{ href: null, headerShown: false }}
+            />
+
+            <Tabs.Screen
                 name='index'
                 options={{
                     title: 'CinaSwipe',
                     tabBarIcon: ({ color }) => (
-                        <TabBarIcon name='code' color={color} />
+                        <TabBarIcon name='film' color={color} />
                     ),
                     headerRight: () => (
-                        <Link href='/modal' asChild>
+                        <Link href='/user-page' asChild>
                             <Pressable>
                                 {({ pressed }) => (
                                     <FontAwesome
-                                        name='info-circle'
+                                        name='user-circle'
                                         size={25}
-                                        color={
-                                            Colors[colorScheme ?? 'light'].text
-                                        }
+                                        color={Colors.light.tint}
                                         style={{
                                             marginRight: 15,
                                             opacity: pressed ? 0.5 : 1,
@@ -57,9 +60,9 @@ export default function TabLayout() {
             <Tabs.Screen
                 name='two'
                 options={{
-                    title: 'Login',
+                    title: 'Lobby',
                     tabBarIcon: ({ color }) => (
-                        <TabBarIcon name='code' color={color} />
+                        <TabBarIcon name='television' color={color} />
                     ),
                 }}
             />
