@@ -70,7 +70,10 @@ function RootLayoutNav() {
                     />
                     <Stack.Screen
                         name='user-page'
-                        options={{ presentation: 'modal' }}
+                        options={{
+                            presentation: 'modal',
+                            headerTitle: 'User Profile',
+                        }}
                     />
                 </Stack>
             </AuthProvider>

@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, Image, Dimensions } from 'react-native';
+import {
+    View,
+    StyleSheet,
+    Text,
+    Image,
+    Dimensions,
+    TouchableOpacity,
+} from 'react-native';
 import DeckSwiper from 'react-native-deck-swiper';
 import { Movie } from '../../types';
-import { Link, useSegments } from 'expo-router';
-
-const GreenTick = () => <Text style={[styles.icon, styles.green]}>✓</Text>;
-const RedCross = () => <Text style={[styles.icon, styles.red]}>✕</Text>;
+import { Link } from 'expo-router';
+import GenreModal from '../GenreModal/GenreModal'; // Import the GenreModal component
+import genres from '@/assets/data/genres';
 
 export const defaultMoviePoster =
     'http://www.staticwhich.co.uk/static/images/products/no-image/no-image-available.png';
@@ -16,80 +22,69 @@ type MovieCardSwipeProps = {
 
 const windowWidth = Dimensions.get('window').width;
 
-export default function MovieCardSwipe({ movies }: MovieCardSwipeProps) {
+const MovieCardSwipe: React.FC<MovieCardSwipeProps> = ({ movies }) => {
     const [swipeDirection, setSwipeDirection] = useState<string | null>(null);
-    const [showGreenTick, setShowGreenTick] = useState<boolean>(false);
-    const [showRedCross, setShowRedCross] = useState<boolean>(false);
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
-    const onSwiping = () => {
-        setShowGreenTick(false);
+    const toggleModal = () => {
+        setIsModalVisible(!isModalVisible);
     };
 
-    const onSwiped = (index: number, direction: string) => {
-        if (direction === 'right') {
-            console.log('Swiped right');
-            setShowGreenTick(true);
-        } else if (direction === 'left') {
-            console.log('Swiped left');
-            setShowRedCross(true);
-        }
+    const onSwipedRight = () => {
+        console.log('Swiped right');
+    };
+
+    const onSwipedLeft = () => {
+        console.log('Swiped left');
     };
 
     return (
         <View style={styles.container}>
+            <TouchableOpacity style={styles.genreButton} onPress={toggleModal}>
+                <Text style={styles.genreButtonText}>Genres</Text>
+            </TouchableOpacity>
+            <GenreModal
+                visible={isModalVisible}
+                onClose={toggleModal}
+                genres={genres}
+            />
+
             <DeckSwiper
+                backgroundColor={'lightblue'}
                 cards={movies.map((movie) => ({
-                    id: movie.imdbID,
-                    title: movie.Title,
-                    year: movie.Year,
-                    plot: movie.Plot,
-                    poster:
-                        movie.Poster !== 'N/A'
-                            ? movie.Poster
-                            : defaultMoviePoster,
+                    id: movie.id.toString(),
+                    title: movie.title,
+                    year: movie.release_date.substring(0, 4),
+                    plot: movie.overview,
+                    poster: movie.poster_path
+                        ? `https://image.tmdb.org/t/p/original/${movie.poster_path}`
+                        : defaultMoviePoster,
                 }))}
                 renderCard={(item: any) => (
-                    <Link key={item.id} href={`/movies/${item.id}`}>
-                        <View style={styles.card}>
-                            <Image
-                                source={{ uri: item.poster }}
-                                style={styles.image}
-                            />
-                            <View>
-                                <Text style={styles.title}>{item.title}</Text>
-                                <Text style={styles.year}>{item.year}</Text>
-                                <Text style={styles.plot}>{item.plot}</Text>
-                            </View>
+                    <View style={styles.card}>
+                        <Image
+                            source={{ uri: item.poster }}
+                            style={styles.image}
+                        />
+                        <View style={styles.textContainer}>
+                            <Text style={styles.title}>{item.title}</Text>
+                            <Text style={styles.year}>{item.year}</Text>
+                            <Text style={styles.plot}>{item.plot}</Text>
                         </View>
-                    </Link>
+                    </View>
                 )}
-                // onSwiping={() => onSwiping()}
-                // onSwiped={(index: number, direction: string) =>
-                //     onSwiped(index, direction)
-                // }
-                onSwipedRight={() => {
-                    console.log('Swiped right');
-                    setSwipeDirection('right');
-                }}
-                onSwipedLeft={() => {
-                    console.log('Swiped left');
-                    setSwipeDirection('left');
-                }}
+                onSwipedRight={onSwipedRight}
+                onSwipedLeft={onSwipedLeft}
                 onSwipedAll={() => setSwipeDirection(null)}
                 verticalSwipe={false}
             />
-            {showGreenTick && (
-                <View style={styles.iconContainer}>
-                    <GreenTick />
-                </View>
-            )}
         </View>
     );
-}
+};
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'black',
     },
@@ -108,22 +103,27 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         width: windowWidth * 0.9,
         height: 650,
+        zIndex: -1,
+    },
+    textContainer: {
+        padding: 10,
     },
     title: {
         textAlign: 'center',
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 5,
     },
     year: {
         textAlign: 'center',
-        fontSize: 18,
+        fontSize: 16,
         color: '#666',
-        marginBottom: 10,
+        marginBottom: 5,
     },
     plot: {
-        fontSize: 16,
-        lineHeight: 22,
+        height: 120,
+        fontSize: 14,
+        lineHeight: 20,
     },
     image: {
         borderTopLeftRadius: 10,
@@ -151,4 +151,19 @@ const styles = StyleSheet.create({
     red: {
         color: 'red',
     },
+    genreButton: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        padding: 10,
+        backgroundColor: 'lightgrey',
+        borderRadius: 5,
+        zIndex: 1,
+    },
+    genreButtonText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
 });
+
+export default MovieCardSwipe;

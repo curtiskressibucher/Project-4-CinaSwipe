@@ -1,43 +1,57 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
-import movies from '@/assets/data/movies';
-import { defaultMoviePoster } from '@/src/components/MovieCardSwipe/MovieCardSwipe';
+import { fetchMovieDetails } from '../../../api/TmdbApi';
+import { Movie } from '../../../types';
 
-const MovieDetailScreen = () => {
-    const { id } = useLocalSearchParams();
+const defaultMoviePoster =
+    'http://www.staticwhich.co.uk/static/images/products/no-image/no-image-available.png';
 
-    const movie = movies.find((m) => m.imdbID.toString() === id);
+type MovieDetailScreenProps = {
+    route: { params: { id: string } };
+};
+
+const MovieDetailScreen: React.FC<MovieDetailScreenProps> = ({ route }) => {
+    const { id } = route.params;
+    const [movie, setMovie] = useState<Movie | null>(null);
+
+    useEffect(() => {
+        async function fetchMovie() {
+            try {
+                const movieData: Movie | null = await fetchMovieDetails(id);
+                setMovie(movieData);
+            } catch (error) {
+                console.error('Error fetching movie details: ', error);
+            }
+        }
+
+        fetchMovie();
+    }, [id]);
 
     if (!movie) {
-        return <Text>Movie not found</Text>;
+        return <Text>Loading...</Text>;
     }
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <Stack.Screen options={{ title: movie.Title }} />
-            <Image source={{ uri: movie.Poster }} style={styles.poster} />
-            <Text style={styles.title}>{movie.Title}</Text>
-            <View style={styles.detailsContainer}>
-                <Text style={styles.detailItem}>Year: {movie.Year}</Text>
-                <Text style={styles.detailItem}>Rated: {movie.Rated}</Text>
-                <Text style={styles.detailItem}>Runtime: {movie.Runtime}</Text>
-                <Text style={styles.detailItem}>Genre: {movie.Genre}</Text>
-                <Text style={styles.detailItem}>
-                    Director: {movie.Director}
-                </Text>
-                <Text style={styles.plot}>{movie.Plot}</Text>
-                <Text style={styles.detailItem}>
-                    Language: {movie.Language}
-                </Text>
-                <Text style={styles.detailItem}>Country: {movie.Country}</Text>
-                <Text style={styles.detailItem}>Awards: {movie.Awards}</Text>
-                <Text style={styles.detailItem}>
-                    IMDb Rating: {movie.imdbRating}
-                </Text>
-                <Text style={styles.detailItem}>
-                    IMDb Votes: {movie.imdbVotes}
-                </Text>
-            </View>
+            <Image
+                source={{
+                    uri: movie.poster_path
+                        ? `https://image.tmdb.org/t/p/original/${movie.poster_path}`
+                        : defaultMoviePoster,
+                }}
+                style={styles.poster}
+            />
+            <Text style={styles.title}>{movie.title}</Text>
+            <Text style={styles.detailItem}>
+                Original Title: {movie.original_title}
+            </Text>
+            <Text style={styles.detailItem}>
+                Release Date: {movie.release_date}
+            </Text>
+            <Text style={styles.detailItem}>Plot: {movie.overview}</Text>
+            <Text style={styles.detailItem}>
+                Runtime: {movie.runtime} minutes
+            </Text>
         </ScrollView>
     );
 };
@@ -60,16 +74,8 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         textAlign: 'center',
     },
-    detailsContainer: {
-        width: '80%',
-        paddingHorizontal: 20,
-    },
     detailItem: {
         marginBottom: 10,
-    },
-    plot: {
-        marginBottom: 20,
-        fontStyle: 'italic',
     },
 });
 
