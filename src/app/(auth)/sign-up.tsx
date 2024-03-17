@@ -6,16 +6,35 @@ import { Link, Stack } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 
 const SignUpScreen = () => {
-    const [name, setName] = useState('');
+    const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
 
     async function signUpWithEmail() {
         setLoading(true);
-        const { error } = await supabase.auth.signUp({ email, password });
+        const { data: user, error } = await supabase.auth.signUp({
+            email,
+            password,
+        });
 
-        if (error) Alert.alert(error.message);
+        if (error) {
+            Alert.alert(error.message);
+            setLoading(false);
+            return;
+        }
+
+        // Update user profile with full name
+        const { data, error: profileError } = await supabase
+            .from('profiles')
+            .upsert({ id: user.user?.id, full_name: fullName });
+
+        if (profileError) {
+            Alert.alert(profileError.message);
+            setLoading(false);
+            return;
+        }
+
         setLoading(false);
     }
 
@@ -23,10 +42,10 @@ const SignUpScreen = () => {
         <View style={styles.container}>
             <Stack.Screen options={{ title: 'Sign up' }} />
 
-            <Text style={styles.label}>Name</Text>
+            <Text style={styles.label}>Full Name</Text>
             <TextInput
-                value={name}
-                onChangeText={setName}
+                value={fullName}
+                onChangeText={setFullName}
                 placeholder='John Doe'
                 style={styles.input}
             />

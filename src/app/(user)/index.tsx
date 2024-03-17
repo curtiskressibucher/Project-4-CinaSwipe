@@ -8,7 +8,7 @@ export default function HomeScreen() {
             {/* <Redirect href='/(user)' /> */}
             <View style={styles.pageContainer}>
                 <Text style={styles.title}>Welcome to CinaSwipe App</Text>
-                <Link href={'/movies/movie-page'} asChild>
+                <Link href={'/(user)/movies/movie-page'} asChild>
                     <TouchableOpacity style={styles.button}>
                         <Text style={styles.buttonText}>
                             Go to Movie Swiper
