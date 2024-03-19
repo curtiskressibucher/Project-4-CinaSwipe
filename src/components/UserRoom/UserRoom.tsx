@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../providers/AuthProviders';
+import { Redirect } from 'expo-router';
 
 type UserRoomProps = {
-    roomId: number | null;
+    roomId: any;
     profile: any;
+    onLeaveRoom: () => void;
 };
 
-const UserRoom: React.FC<UserRoomProps> = ({ roomId }) => {
-    const { session, loading } = useAuth();
+const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
+    const { session, loading, profile } = useAuth();
     const [userRoom, setUserRoom] = useState<any>(null);
     const [users, setUsers] = useState<any[]>([]);
 
@@ -92,6 +94,23 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId }) => {
         }
     };
 
+    const leaveRoom = async (userId: number) => {
+        try {
+            await supabase
+                .from('user_room')
+                // .update({ active: null })
+                .delete()
+                .eq('room_id', roomId)
+                .eq('user_id', userId);
+
+            fetchUsers();
+            console.log('Left room successfully');
+            onLeaveRoom();
+        } catch (error) {
+            console.error('Error leaving room:', error);
+        }
+    };
+
     return (
         <View style={styles.container}>
             {userRoom ? (
@@ -107,14 +126,20 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId }) => {
                                 <Text style={styles.userName}>
                                     {item.full_name}
                                 </Text>
-                                <Button
-                                    title='Invite'
-                                    onPress={() => inviteUser(item.id)}
-                                />
+                                <View style={styles.buttonContainer}>
+                                    <Button
+                                        title='Invite'
+                                        onPress={() => inviteUser(item.id)}
+                                    />
+                                    <Button
+                                        title='Leave'
+                                        onPress={() => leaveRoom(item.id)}
+                                        color='red'
+                                    />
+                                </View>
                             </View>
                         )}
                     />
-                    {/* <MovieCardSwipe movies={movies} /> */}
                 </>
             ) : (
                 <Text style={styles.noRoomText}>
@@ -144,6 +169,10 @@ const styles = StyleSheet.create({
     userName: {
         flex: 1,
         fontSize: 18,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     noRoomText: {
         fontSize: 18,

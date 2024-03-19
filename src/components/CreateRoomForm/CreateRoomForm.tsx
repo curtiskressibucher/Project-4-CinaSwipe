@@ -83,14 +83,9 @@ export default function CreateRoomForm() {
                     <Button title='Create Room' onPress={handleCreateRoom} />
                 </>
             ) : (
-                <Redirect href={'/room-page'} />
+                <Redirect href={'/rooms/room-page'} />
             )}
-            <RoomList
-                profile={profile}
-                selectedRoomId={selectedRoomId}
-                onRoomSelect={setSelectedRoomId}
-                setRoomCreated={setRoomCreated}
-            />
+            <Link href={'/(user)/rooms/room-page'}>Search Rooms</Link>
             <TouchableOpacity style={styles.button}>
                 <Link href={'/'}>
                     <Text style={styles.buttonText}>Back home</Text>

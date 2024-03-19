@@ -36,6 +36,10 @@ export default function TabLayout() {
                 name='movies'
                 options={{ href: null, headerShown: false }}
             />
+            <Tabs.Screen
+                name='rooms'
+                options={{ href: null, headerShown: false }}
+            />
 
             <Tabs.Screen
                 name='index'

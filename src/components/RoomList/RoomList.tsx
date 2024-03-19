@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import {
+    View,
+    Text,
+    FlatList,
+    TouchableOpacity,
+    StyleSheet,
+} from 'react-native';
 import { supabase } from '../../lib/supabase';
-import UserRoom from '../UserRoom/UserRoom';
+import { Link } from 'expo-router';
+
+type Room = {
+    id: number;
+    room_name: string;
+};
 
 type RoomListProps = {
     profile: any;
@@ -44,17 +55,19 @@ const RoomList: React.FC<RoomListProps> = ({
         setRoomCreated(false);
     };
 
-    const renderRoomItem = ({ item }: { item: any }) => (
-        <TouchableOpacity onPress={() => handleRoomSelect(item.id)}>
-            <View>
-                <Text>{item.room_name}</Text>
+    const renderRoomItem = ({ item }: { item: Room }) => (
+        <Link
+            href={`/rooms/${item.id}`}
+            onPress={() => handleRoomSelect(item.id)}>
+            <View style={styles.roomItem}>
+                <Text style={styles.roomName}>{item.room_name}</Text>
             </View>
-        </TouchableOpacity>
+        </Link>
     );
 
     return (
-        <View>
-            <Text style={{ fontWeight: 'bold' }}>Room List:</Text>
+        <View style={styles.container}>
+            <Text style={styles.header}>Room List:</Text>
             {selectedRoomId === null && (
                 <FlatList
                     data={rooms}
@@ -62,11 +75,28 @@ const RoomList: React.FC<RoomListProps> = ({
                     keyExtractor={(item) => item.id.toString()}
                 />
             )}
-            {selectedRoomId !== null && (
-                <UserRoom profile={profile} roomId={selectedRoomId} />
-            )}
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: 'lightgray',
+    },
+    header: {
+        fontWeight: 'bold',
+        fontSize: 18,
+        marginBottom: 10,
+    },
+    roomItem: {
+        padding: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+    },
+    roomName: {
+        fontSize: 16,
+    },
+});
 
 export default RoomList;
