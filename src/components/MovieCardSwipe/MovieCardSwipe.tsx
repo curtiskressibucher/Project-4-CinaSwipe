@@ -80,32 +80,28 @@ const MovieCardSwipe = ({ movies }: MovieCardSwipeProps) => {
                 }))}
                 renderCard={(item: any) => {
                     return (
-                        <Link href={`/movies/${item.id}`}>
-                            <View style={styles.card}>
-                                <Image
-                                    source={{ uri: item.poster }}
-                                    style={styles.image}
-                                />
-                                <View style={styles.textContainer}>
-                                    <Text style={styles.title}>
-                                        {item.title}
-                                    </Text>
-                                    <Text style={styles.year}>{item.year}</Text>
-                                    <Text style={styles.plot}>{item.plot}</Text>
-                                    {swipeDirection === 'right' && (
-                                        <View style={styles.tickContainer}>
-                                            <Text
-                                                style={[
-                                                    styles.icon,
-                                                    styles.green,
-                                                ]}>
-                                                ✓
-                                            </Text>
-                                        </View>
-                                    )}
-                                </View>
+                        // Presable! use presable!
+                        // <Link href={`/movies/${item.id}`} asChild>
+                        <View style={styles.card}>
+                            <Image
+                                source={{ uri: item.poster }}
+                                style={styles.image}
+                            />
+                            <View style={styles.textContainer}>
+                                <Text style={styles.title}>{item.title}</Text>
+                                <Text style={styles.year}>{item.year}</Text>
+                                <Text style={styles.plot}>{item.plot}</Text>
+                                {swipeDirection === 'right' && (
+                                    <View style={styles.tickContainer}>
+                                        <Text
+                                            style={[styles.icon, styles.green]}>
+                                            ✓
+                                        </Text>
+                                    </View>
+                                )}
                             </View>
-                        </Link>
+                        </View>
+                        // </Link>
                     );
                 }}
                 onSwipedRight={onSwipedRight}

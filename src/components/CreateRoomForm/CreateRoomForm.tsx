@@ -10,8 +10,6 @@ import {
 } from 'react-native';
 import { useAuth } from '../../providers/AuthProviders';
 import { supabase } from '../../lib/supabase';
-import UserRoom from '../../components/UserRoom/UserRoom';
-import RoomList from '../../components/RoomList/RoomList';
 import { Link, Redirect } from 'expo-router';
 
 export default function CreateRoomForm() {
@@ -85,7 +83,13 @@ export default function CreateRoomForm() {
             ) : (
                 <Redirect href={'/rooms/room-page'} />
             )}
-            <Link href={'/(user)/rooms/room-page'}>Search Rooms</Link>
+
+            <TouchableOpacity style={styles.searchButton}>
+                <Link href={'/(user)/rooms/room-page'}>
+                    <Text style={styles.buttonText}>Search Rooms</Text>
+                </Link>
+            </TouchableOpacity>
+
             <TouchableOpacity style={styles.button}>
                 <Link href={'/'}>
                     <Text style={styles.buttonText}>Back home</Text>
@@ -127,5 +131,12 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 16,
+    },
+    searchButton: {
+        backgroundColor: '#00ff48',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+        marginTop: 20,
     },
 });
