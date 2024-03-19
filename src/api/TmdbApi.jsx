@@ -1,5 +1,5 @@
-const TMDB_API_KEY = '';
-const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+const TMDB_API_KEY = process.env.EXPO_PUBLIC_TMDB_API_KEY;
+const TMDB_BASE_URL = process.env.EXPO_PUBLIC_TMDB_BASE_URL;
 
 export const fetchPopularMovies = async () => {
     try {
