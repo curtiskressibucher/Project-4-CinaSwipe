@@ -1,4 +1,4 @@
-const TMDB_API_KEY = 'YOUR_TMDB_API';
+const TMDB_API_KEY = '938695bcb0b1c25b59831335d211ec6d';
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
 export const fetchPopularMovies = async () => {
@@ -13,33 +13,17 @@ export const fetchPopularMovies = async () => {
         throw error;
     }
 };
-export const fetchMovieDetails = async (movieId) => {
+
+export const fetchMovieGenres = async () => {
     try {
         const response = await fetch(
-            `${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US`
+            `${TMDB_BASE_URL}/genre/movie/list?api_key=${TMDB_API_KEY}&language=en-US`
         );
         const data = await response.json();
-        if (response.ok) {
-            const movie = {
-                id: data.id,
-                title: data.title,
-                original_title: data.original_title,
-                release_date: data.release_date,
-                overview: data.overview,
-                poster_path: data.poster_path,
-                backdrop_path: data.backdrop_path,
-                popularity: data.popularity,
-                vote_average: data.vote_average,
-                vote_count: data.vote_count,
-                runtime: data.runtime,
-            };
-            return movie;
-        } else {
-            console.error('Error fetching movie details: ', data);
-            return null;
-        }
+        console.log(data.genres);
+        return data.genres;
     } catch (error) {
-        console.error('Error fetching movie details: ', error);
+        console.error('Error fetching movie genres: ', error);
         throw error;
     }
 };

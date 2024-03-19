@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     StyleSheet,
@@ -10,7 +10,7 @@ import {
 import DeckSwiper from 'react-native-deck-swiper';
 import { Movie } from '../../types';
 import { Link } from 'expo-router';
-import GenreModal from '../GenreModal/GenreModal'; // Import the GenreModal component
+import GenreModal from '../GenreModal/GenreModal';
 import genres from '@/assets/data/genres';
 
 export const defaultMoviePoster =
@@ -22,9 +22,10 @@ type MovieCardSwipeProps = {
 
 const windowWidth = Dimensions.get('window').width;
 
-const MovieCardSwipe: React.FC<MovieCardSwipeProps> = ({ movies }) => {
+const MovieCardSwipe = ({ movies }: MovieCardSwipeProps) => {
     const [swipeDirection, setSwipeDirection] = useState<string | null>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [showTick, setShowTick] = useState(false);
 
     const toggleModal = () => {
         setIsModalVisible(!isModalVisible);
@@ -32,17 +33,34 @@ const MovieCardSwipe: React.FC<MovieCardSwipeProps> = ({ movies }) => {
 
     const onSwipedRight = () => {
         console.log('Swiped right');
+        setShowTick(true);
+        setTimeout(() => {
+            setShowTick(false);
+        }, 1000);
     };
 
     const onSwipedLeft = () => {
         console.log('Swiped left');
     };
 
+    useEffect(() => {
+        if (showTick) {
+            setTimeout(() => {
+                setShowTick(false);
+            }, 500);
+        }
+    }, [showTick]);
+
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.genreButton} onPress={toggleModal}>
                 <Text style={styles.genreButtonText}>Genres</Text>
             </TouchableOpacity>
+            {showTick && (
+                <View style={styles.iconContainer}>
+                    <Text style={[styles.icon, styles.green]}>✓</Text>
+                </View>
+            )}
             <GenreModal
                 visible={isModalVisible}
                 onClose={toggleModal}
@@ -60,19 +78,36 @@ const MovieCardSwipe: React.FC<MovieCardSwipeProps> = ({ movies }) => {
                         ? `https://image.tmdb.org/t/p/original/${movie.poster_path}`
                         : defaultMoviePoster,
                 }))}
-                renderCard={(item: any) => (
-                    <View style={styles.card}>
-                        <Image
-                            source={{ uri: item.poster }}
-                            style={styles.image}
-                        />
-                        <View style={styles.textContainer}>
-                            <Text style={styles.title}>{item.title}</Text>
-                            <Text style={styles.year}>{item.year}</Text>
-                            <Text style={styles.plot}>{item.plot}</Text>
-                        </View>
-                    </View>
-                )}
+                renderCard={(item: any) => {
+                    return (
+                        <Link href={`/movies/${item.id}`}>
+                            <View style={styles.card}>
+                                <Image
+                                    source={{ uri: item.poster }}
+                                    style={styles.image}
+                                />
+                                <View style={styles.textContainer}>
+                                    <Text style={styles.title}>
+                                        {item.title}
+                                    </Text>
+                                    <Text style={styles.year}>{item.year}</Text>
+                                    <Text style={styles.plot}>{item.plot}</Text>
+                                    {swipeDirection === 'right' && (
+                                        <View style={styles.tickContainer}>
+                                            <Text
+                                                style={[
+                                                    styles.icon,
+                                                    styles.green,
+                                                ]}>
+                                                ✓
+                                            </Text>
+                                        </View>
+                                    )}
+                                </View>
+                            </View>
+                        </Link>
+                    );
+                }}
                 onSwipedRight={onSwipedRight}
                 onSwipedLeft={onSwipedLeft}
                 onSwipedAll={() => setSwipeDirection(null)}
@@ -86,7 +121,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
+        alignItems: 'center',
         backgroundColor: 'black',
+    },
+    tickContainer: {
+        alignItems: 'center',
+        marginTop: 10,
     },
     card: {
         borderRadius: 10,
@@ -142,11 +182,12 @@ const styles = StyleSheet.create({
         zIndex: 2,
     },
     icon: {
-        fontSize: 40,
+        fontSize: 50,
         marginHorizontal: 10,
     },
     green: {
         color: 'green',
+        fontSize: 50,
     },
     red: {
         color: 'red',

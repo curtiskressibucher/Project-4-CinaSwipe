@@ -21,7 +21,6 @@ const User = () => {
                         .single();
                     if (error) throw error;
                     setUserData(data);
-                    console.log('User Data:', data);
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error as Error);

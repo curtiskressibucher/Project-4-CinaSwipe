@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
-import { fetchMovieDetails } from '../../../api/TmdbApi';
+import { fetchPopularMovies } from '../../../api/TmdbApi';
 import { Movie } from '../../../types';
 
 const defaultMoviePoster =
@@ -10,22 +10,23 @@ type MovieDetailScreenProps = {
     route: { params: { id: string } };
 };
 
-const MovieDetailScreen: React.FC<MovieDetailScreenProps> = ({ route }) => {
+const MovieDetailScreen = ({ route }: MovieDetailScreenProps) => {
     const { id } = route.params;
     const [movie, setMovie] = useState<Movie | null>(null);
 
     useEffect(() => {
         async function fetchMovie() {
             try {
-                const movieData: Movie | null = await fetchMovieDetails(id);
+                const movieData: Movie | null = await fetchPopularMovies();
                 setMovie(movieData);
+                console.log(movieData);
             } catch (error) {
                 console.error('Error fetching movie details: ', error);
             }
         }
 
         fetchMovie();
-    }, [id]);
+    }, []);
 
     if (!movie) {
         return <Text>Loading...</Text>;
