@@ -27,3 +27,16 @@ export const fetchMovieGenres = async () => {
         throw error;
     }
 };
+
+export const fetchMoviesByGenre = async (genreId) => {
+    try {
+        const response = await fetch(
+            `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&language=en-US&with_genres=${genreId}&sort_by=popularity.desc`
+        );
+        const data = await response.json();
+        return data.results;
+    } catch (error) {
+        console.error(`Error fetching movies for genre ${genreId}: `, error);
+        throw error;
+    }
+};

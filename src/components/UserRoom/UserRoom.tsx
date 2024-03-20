@@ -171,9 +171,14 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
                     <Text style={styles.roomName}>
                         Room: {userRoom.room_name}!
                     </Text>
-                    <Link href={`/rooms/${userRoom.id}`}>
-                        <Text>Go to Room</Text>
-                    </Link>
+                    <View style={styles.goToRoomContainer}>
+                        <View style={{ flex: 1 }} />
+                        <Link href={`/rooms/${userRoom.id}`} asChild>
+                            <Text style={styles.goToRoomLink}>
+                                Movie Match!
+                            </Text>
+                        </Link>
+                    </View>
                     <FlatList
                         data={users}
                         keyExtractor={(item) => item.id.toString()}
@@ -265,6 +270,22 @@ const styles = StyleSheet.create({
     noRoomText: {
         fontSize: 18,
         textAlign: 'center',
+    },
+    goToRoomContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20, // Adjust as needed
+    },
+    goToRoomLink: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#007BFF', // Adjust color to match your page
+        textAlign: 'center',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 20,
+        borderWidth: 2,
+        borderColor: '#007BFF', // Adjust border color to match your page
     },
 });
 

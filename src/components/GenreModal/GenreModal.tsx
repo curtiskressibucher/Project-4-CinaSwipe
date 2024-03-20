@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Modal,
@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     ScrollView,
 } from 'react-native';
+import { fetchMoviesByGenre } from '../../api/TmdbApi';
 
 type Genre = {
     id: number;
@@ -17,12 +18,29 @@ type GenreModalProps = {
     visible: boolean;
     onClose: () => void;
     genres: Genre[];
+    onSelectGenre: (movies: any[]) => void;
 };
 
-const GenreModal = ({ visible, onClose, genres }: GenreModalProps) => {
-    const handleGenreSelection = (genre: Genre) => {
-        console.log('Selected genre:', genre);
+const GenreModal = ({
+    visible,
+    onClose,
+    genres,
+    onSelectGenre,
+}: GenreModalProps) => {
+    const [selectedGenre, setSelectedGenre] = useState<Genre | null>(null);
+
+    const handleGenreSelection = async (genre: Genre) => {
+        console.log('Selected genre:', genre.name);
+        setSelectedGenre(genre);
         onClose();
+
+        try {
+            const response = await fetchMoviesByGenre(genre.id);
+            // console.log('Movies for genre', genre.name + ':', response);
+            onSelectGenre(response);
+        } catch (error) {
+            console.error('Error fetching movies:', error);
+        }
     };
 
     return (
@@ -78,7 +96,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 10,
         marginBottom: 10,
-        backgroundColor: 'lightgrey',
+        backgroundColor: '#008080',
         borderRadius: 20,
     },
     genreButtonText: {

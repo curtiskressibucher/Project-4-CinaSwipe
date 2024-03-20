@@ -26,6 +26,9 @@ const MovieCardSwipe = ({ movies }: MovieCardSwipeProps) => {
     const [swipeDirection, setSwipeDirection] = useState<string | null>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [showTick, setShowTick] = useState(false);
+    const [showCross, setShowCross] = useState(false);
+    const [selectedGenreMovies, setSelectedGenreMovies] = useState<Movie[]>([]);
+    const [reloadKey, setReloadKey] = useState(0);
 
     const toggleModal = () => {
         setIsModalVisible(!isModalVisible);
@@ -41,6 +44,10 @@ const MovieCardSwipe = ({ movies }: MovieCardSwipeProps) => {
 
     const onSwipedLeft = () => {
         console.log('Swiped left');
+        setShowCross(true);
+        setTimeout(() => {
+            setShowCross(false);
+        }, 1000);
     };
 
     useEffect(() => {
@@ -51,8 +58,14 @@ const MovieCardSwipe = ({ movies }: MovieCardSwipeProps) => {
         }
     }, [showTick]);
 
+    const handleGenreSelect = (selectedMovies: Movie[]) => {
+        setSelectedGenreMovies(selectedMovies);
+        // console.log('Selected genre movies:', selectedMovies);
+        setReloadKey((prevKey) => prevKey + 1);
+    };
+
     return (
-        <View style={styles.container}>
+        <View key={reloadKey} style={styles.container}>
             <TouchableOpacity style={styles.genreButton} onPress={toggleModal}>
                 <Text style={styles.genreButtonText}>Genres</Text>
             </TouchableOpacity>
@@ -61,16 +74,25 @@ const MovieCardSwipe = ({ movies }: MovieCardSwipeProps) => {
                     <Text style={[styles.icon, styles.green]}>✓</Text>
                 </View>
             )}
+            {showCross && (
+                <View style={styles.iconContainer}>
+                    <Text style={[styles.icon, styles.red]}>✗</Text>
+                </View>
+            )}
             <GenreModal
                 visible={isModalVisible}
                 onClose={toggleModal}
                 genres={genres}
+                onSelectGenre={handleGenreSelect}
             />
 
             <DeckSwiper
                 backgroundColor={'lightblue'}
-                cards={movies.map((movie) => ({
-                    id: movie.id.toString(),
+                cards={(selectedGenreMovies.length > 0
+                    ? selectedGenreMovies
+                    : movies
+                ).map((movie, index) => ({
+                    id: index.toString(),
                     title: movie.title,
                     year: movie.release_date.substring(0, 4),
                     plot: movie.overview,
@@ -80,8 +102,6 @@ const MovieCardSwipe = ({ movies }: MovieCardSwipeProps) => {
                 }))}
                 renderCard={(item: any) => {
                     return (
-                        // Presable! use presable!
-                        // <Link href={`/movies/${item.id}`} asChild>
                         <View style={styles.card}>
                             <Image
                                 source={{ uri: item.poster }}
@@ -99,9 +119,15 @@ const MovieCardSwipe = ({ movies }: MovieCardSwipeProps) => {
                                         </Text>
                                     </View>
                                 )}
+                                {swipeDirection === 'left' && (
+                                    <View style={styles.crossContainer}>
+                                        <Text style={[styles.icon, styles.red]}>
+                                            ✗
+                                        </Text>
+                                    </View>
+                                )}
                             </View>
                         </View>
-                        // </Link>
                     );
                 }}
                 onSwipedRight={onSwipedRight}
@@ -121,6 +147,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
     },
     tickContainer: {
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    crossContainer: {
         alignItems: 'center',
         marginTop: 10,
     },
