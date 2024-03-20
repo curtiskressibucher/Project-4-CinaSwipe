@@ -1,59 +1,68 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
-import { fetchPopularMovies } from '../../../api/TmdbApi';
+import { fetchMovieDetailsById } from '../../../api/TmdbApi';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { Movie } from '../../../types';
-import { useLocalSearchParams } from 'expo-router';
 
 const defaultMoviePoster =
     'http://www.staticwhich.co.uk/static/images/products/no-image/no-image-available.png';
 
-type MovieDetailScreenProps = {
-    route: { params: { id: string } };
+type LocalSearchParams = {
+    id: string;
 };
 
-const MovieDetailScreen = ({ route }: MovieDetailScreenProps) => {
-    const { id } = useLocalSearchParams();
+const MovieDetailScreen = () => {
+    const { id } = useLocalSearchParams<LocalSearchParams>();
     const [movie, setMovie] = useState<Movie | null>(null);
 
     useEffect(() => {
-        async function fetchMovie() {
+        const fetchMovie = async () => {
             try {
-                const movieData: Movie | null = await fetchPopularMovies();
+                const movieData = await fetchMovieDetailsById(Number(id));
                 setMovie(movieData);
-                console.log(movieData);
             } catch (error) {
                 console.error('Error fetching movie details: ', error);
             }
-        }
+        };
 
         fetchMovie();
-    }, []);
+    }, [id]);
 
-    if (!movie) {
+    if (!movie || !movie.title) {
         return <Text>Loading...</Text>;
     }
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <Image
-                source={{
-                    uri: movie.poster_path
-                        ? `https://image.tmdb.org/t/p/original/${movie.poster_path}`
-                        : defaultMoviePoster,
-                }}
-                style={styles.poster}
-            />
-            <Text style={styles.title}>{movie.title}</Text>
-            <Text style={styles.detailItem}>
-                Original Title: {movie.original_title}
-            </Text>
-            <Text style={styles.detailItem}>
-                Release Date: {movie.release_date}
-            </Text>
-            <Text style={styles.detailItem}>Plot: {movie.overview}</Text>
-            <Text style={styles.detailItem}>
-                Runtime: {movie.runtime} minutes
-            </Text>
+            <View style={styles.posterContainer}>
+                <Stack.Screen options={{ title: movie.title }} />
+                <Image
+                    source={{
+                        uri: movie.poster_path
+                            ? `https://image.tmdb.org/t/p/original/${movie.poster_path}`
+                            : defaultMoviePoster,
+                    }}
+                    style={styles.poster}
+                />
+            </View>
+            <View style={styles.detailsContainer}>
+                <Text style={styles.title}>{movie.title}</Text>
+                <Text style={styles.detailItem}>
+                    <Text style={styles.bold}>Original Title:</Text>{' '}
+                    {movie.original_title}
+                </Text>
+                <Text style={styles.detailItem}>
+                    <Text style={styles.bold}>Release Date:</Text>{' '}
+                    {movie.release_date}
+                </Text>
+                <Text style={styles.plot}>
+                    <Text style={styles.bold}>Plot:</Text> {movie.overview}
+                </Text>
+                <Text style={styles.detailItem}>
+                    <Text style={styles.bold}>Runtime:</Text> {movie.runtime}{' '}
+                    minutes
+                </Text>
+            </View>
         </ScrollView>
     );
 };
@@ -61,23 +70,42 @@ const MovieDetailScreen = ({ route }: MovieDetailScreenProps) => {
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
+        backgroundColor: '#fff',
+    },
+    posterContainer: {
         alignItems: 'center',
+        paddingTop: 20,
         paddingBottom: 20,
-        backgroundColor: 'lightblue',
     },
     poster: {
-        width: 200,
-        height: 300,
-        marginBottom: 20,
+        width: 250,
+        height: 375,
+        resizeMode: 'cover',
+        borderRadius: 10,
+    },
+    detailsContainer: {
+        paddingHorizontal: 20,
+        paddingVertical: 10,
     },
     title: {
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: 'bold',
-        marginBottom: 10,
         textAlign: 'center',
+        marginBottom: 10,
     },
     detailItem: {
+        fontSize: 18,
         marginBottom: 10,
+        lineHeight: 24,
+    },
+    plot: {
+        fontSize: 18,
+        marginBottom: 20,
+        lineHeight: 24,
+    },
+    bold: {
+        fontWeight: 'bold',
+        color: '#333', // Darken color a bit
     },
 });
 

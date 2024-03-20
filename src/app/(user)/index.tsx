@@ -11,7 +11,14 @@ export default function HomeScreen() {
                 <Link href={'/(user)/movies/movie-page'} asChild>
                     <TouchableOpacity style={styles.button}>
                         <Text style={styles.buttonText}>
-                            Go to Movie Swiper
+                            Go to your Movie Favorites
+                        </Text>
+                    </TouchableOpacity>
+                </Link>
+                <Link href={'/(user)/rooms/room-page'} asChild>
+                    <TouchableOpacity style={styles.button}>
+                        <Text style={styles.buttonText}>
+                            Find a Room and your friends to start swipping!
                         </Text>
                     </TouchableOpacity>
                 </Link>

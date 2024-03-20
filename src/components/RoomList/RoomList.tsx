@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import {
+    View,
+    Text,
+    FlatList,
+    StyleSheet,
+    TouchableOpacity,
+} from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { Link } from 'expo-router';
 
@@ -49,14 +55,22 @@ const RoomList: React.FC<RoomListProps> = ({
         setRoomCreated(false);
     };
 
+    const deleteRoom = async (roomId: number) => {
+        await supabase.from('rooms').delete().eq('id', roomId);
+        fetchRooms();
+    };
+
     const renderRoomItem = ({ item }: { item: Room }) => (
-        <Link
-            href={`/rooms/${item.id}`}
-            onPress={() => handleRoomSelect(item.id)}>
-            <View style={styles.roomItem}>
+        <View style={styles.roomItemContainer}>
+            <TouchableOpacity onPress={() => handleRoomSelect(item.id)}>
                 <Text style={styles.roomName}>{item.room_name}</Text>
-            </View>
-        </Link>
+            </TouchableOpacity>
+            <TouchableOpacity
+                onPress={() => deleteRoom(item.id)}
+                style={styles.deleteButton}>
+                <Text style={styles.deleteButtonText}>Delete</Text>
+            </TouchableOpacity>
+        </View>
     );
 
     return (
@@ -83,13 +97,25 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginBottom: 10,
     },
-    roomItem: {
+    roomItemContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         padding: 15,
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
     },
     roomName: {
         fontSize: 16,
+    },
+    deleteButton: {
+        backgroundColor: 'red',
+        padding: 10,
+        borderRadius: 5,
+    },
+    deleteButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
     },
 });
 

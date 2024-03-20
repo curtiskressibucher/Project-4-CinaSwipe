@@ -13,6 +13,7 @@ interface Room {
 
 type MovieCardSwipeProps = {
     movies: Movie[];
+    roomId: Room;
 };
 
 export default function RoomDetail() {
@@ -71,7 +72,7 @@ export default function RoomDetail() {
     return (
         <View style={styles.container}>
             <Stack.Screen options={{ title: room?.room_name }} />
-            <MovieCardSwipe movies={movies} />
+            <MovieCardSwipe movies={movies} roomId={room?.id ?? -1} />
         </View>
     );
 }
@@ -80,6 +81,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
+        alignItems: 'center',
         backgroundColor: 'black',
     },
     roomName: {

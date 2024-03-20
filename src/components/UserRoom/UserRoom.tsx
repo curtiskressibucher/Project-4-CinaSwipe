@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
+import {
+    View,
+    Text,
+    Button,
+    FlatList,
+    StyleSheet,
+    TextInput,
+} from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../providers/AuthProviders';
 import { Link } from 'expo-router';
@@ -14,8 +21,9 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
     const { session, loading, profile } = useAuth();
     const [userRoom, setUserRoom] = useState<any>(null);
     const [users, setUsers] = useState<any[]>([]);
-    const [showAllUsers, setShowAllUsers] = useState(false);
-    const [allUsers, setAllUsers] = useState<any[]>([]);
+    const [fetchedUsers, setFetchedUsers] = useState<any[]>([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState<any[]>([]);
 
     useEffect(() => {
         fetchUserRoom();
@@ -86,6 +94,7 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
             }
 
             setUsers(data || []);
+            setFetchedUsers(data || []);
         } catch (error) {
             console.error('Error fetching users:', error);
         }
@@ -144,26 +153,15 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
         }
     };
 
-    const toggleShowAllUsers = async () => {
-        if (showAllUsers) {
-            setShowAllUsers(false);
-        } else {
-            try {
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('id, full_name');
-
-                if (error) {
-                    throw error;
-                }
-
-                setAllUsers(data || []);
-                setShowAllUsers(true);
-            } catch (error) {
-                console.error('Error fetching all users:', error);
-            }
-        }
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
+        setSearchResults(
+            fetchedUsers.filter((user) =>
+                user.full_name.toLowerCase().includes(query.toLowerCase())
+            )
+        );
     };
+
     return (
         <View style={styles.container}>
             {userRoom ? (
@@ -188,51 +186,38 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
                                     {item.full_name}
                                 </Text>
                                 <View style={styles.buttonContainer}>
-                                    {item.id !== profile.id &&
-                                        !users.find(
-                                            (user) => user.id === item.id
-                                        ) && (
-                                            <Button
-                                                title='Invite'
-                                                onPress={() =>
-                                                    inviteUser(item.id)
-                                                }
-                                            />
-                                        )}
-                                    {item.id === profile.id && (
-                                        <Button
-                                            title='Leave'
-                                            onPress={() => leaveRoom(item.id)}
-                                            color='red'
-                                        />
-                                    )}
+                                    <Button
+                                        title='Leave'
+                                        onPress={() => leaveRoom(item.id)}
+                                        color='red'
+                                    />
                                 </View>
                             </View>
                         )}
                     />
-                    <Button
-                        title={
-                            showAllUsers ? 'Hide All Users' : 'Show All Users'
-                        }
-                        onPress={toggleShowAllUsers}
+                    <TextInput
+                        style={styles.searchBar}
+                        placeholder='Search users...'
+                        onChangeText={handleSearch}
+                        value={searchQuery}
                     />
-                    {showAllUsers && (
-                        <FlatList
-                            data={allUsers}
-                            keyExtractor={(item) => item.id.toString()}
-                            renderItem={({ item }) => (
-                                <View style={styles.userContainer}>
-                                    <Text style={styles.userName}>
-                                        {item.full_name}
-                                    </Text>
+                    <FlatList
+                        data={searchResults}
+                        keyExtractor={(item) => item.id.toString()}
+                        renderItem={({ item }) => (
+                            <View style={styles.userContainer}>
+                                <Text style={styles.userName}>
+                                    {item.full_name}
+                                </Text>
+                                <View style={styles.buttonContainer}>
                                     <Button
                                         title='Invite'
                                         onPress={() => inviteUser(item.id)}
                                     />
                                 </View>
-                            )}
-                        />
-                    )}
+                            </View>
+                        )}
+                    />
                 </>
             ) : (
                 <Text style={styles.noRoomText}>
@@ -274,18 +259,26 @@ const styles = StyleSheet.create({
     goToRoomContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 20, // Adjust as needed
+        marginBottom: 20,
     },
     goToRoomLink: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#007BFF', // Adjust color to match your page
+        color: '#007BFF',
         textAlign: 'center',
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 20,
         borderWidth: 2,
-        borderColor: '#007BFF', // Adjust border color to match your page
+        borderColor: '#007BFF',
+    },
+    searchBar: {
+        height: 40,
+        borderColor: 'gray',
+        borderWidth: 1,
+        borderRadius: 5,
+        marginBottom: 10,
+        paddingHorizontal: 10,
     },
 });
 
