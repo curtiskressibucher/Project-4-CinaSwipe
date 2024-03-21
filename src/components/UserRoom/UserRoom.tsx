@@ -6,6 +6,7 @@ import {
     FlatList,
     StyleSheet,
     TextInput,
+    TouchableOpacity,
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../providers/AuthProviders';
@@ -166,13 +167,10 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
         <View style={styles.container}>
             {userRoom ? (
                 <>
-                    <Text style={styles.roomName}>
-                        Room: {userRoom.room_name}!
-                    </Text>
+                    <Text style={styles.roomName}>{userRoom.room_name}!</Text>
                     <View style={styles.goToRoomContainer}>
-                        <View style={{ flex: 1 }} />
                         <Link href={`/rooms/${userRoom.id}`} asChild>
-                            <Text style={styles.goToRoomLink}>
+                            <Text style={styles.goToRoomButton}>
                                 Movie Match!
                             </Text>
                         </Link>
@@ -185,39 +183,40 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
                                 <Text style={styles.userName}>
                                     {item.full_name}
                                 </Text>
-                                <View style={styles.buttonContainer}>
-                                    <Button
-                                        title='Leave'
-                                        onPress={() => leaveRoom(item.id)}
-                                        color='red'
-                                    />
-                                </View>
+                                <TouchableOpacity
+                                    onPress={() => leaveRoom(item.id)}
+                                    style={styles.leaveButton}>
+                                    <Text style={styles.buttonText}>Leave</Text>
+                                </TouchableOpacity>
                             </View>
                         )}
                     />
-                    <TextInput
-                        style={styles.searchBar}
-                        placeholder='Search users...'
-                        onChangeText={handleSearch}
-                        value={searchQuery}
-                    />
-                    <FlatList
-                        data={searchResults}
-                        keyExtractor={(item) => item.id.toString()}
-                        renderItem={({ item }) => (
-                            <View style={styles.userContainer}>
-                                <Text style={styles.userName}>
-                                    {item.full_name}
-                                </Text>
-                                <View style={styles.buttonContainer}>
-                                    <Button
-                                        title='Invite'
+                    <View style={styles.bottomContainer}>
+                        <TextInput
+                            style={styles.searchBar}
+                            placeholder='Search users...'
+                            onChangeText={handleSearch}
+                            value={searchQuery}
+                        />
+                        <FlatList
+                            data={searchResults}
+                            keyExtractor={(item) => item.id.toString()}
+                            renderItem={({ item }) => (
+                                <View style={styles.userContainer}>
+                                    <Text style={styles.userName}>
+                                        {item.full_name}
+                                    </Text>
+                                    <TouchableOpacity
                                         onPress={() => inviteUser(item.id)}
-                                    />
+                                        style={styles.inviteButton}>
+                                        <Text style={styles.buttonText}>
+                                            Invite
+                                        </Text>
+                                    </TouchableOpacity>
                                 </View>
-                            </View>
-                        )}
-                    />
+                            )}
+                        />
+                    </View>
                 </>
             ) : (
                 <Text style={styles.noRoomText}>
@@ -232,12 +231,13 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: '#fff',
+        backgroundColor: 'lightgray',
     },
     roomName: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
+        color: 'black',
     },
     userContainer: {
         flexDirection: 'row',
@@ -247,30 +247,45 @@ const styles = StyleSheet.create({
     userName: {
         flex: 1,
         fontSize: 18,
+        color: 'black',
     },
-    buttonContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
+    leaveButton: {
+        backgroundColor: 'red',
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        borderRadius: 5,
+    },
+    inviteButton: {
+        backgroundColor: 'green',
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        borderRadius: 5,
+    },
+    buttonText: {
+        color: '#fff',
     },
     noRoomText: {
         fontSize: 18,
         textAlign: 'center',
+        color: '#fff',
     },
     goToRoomContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 20,
     },
-    goToRoomLink: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#007BFF',
-        textAlign: 'center',
+    goToRoomButton: {
+        backgroundColor: '#007BFF',
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 20,
-        borderWidth: 2,
-        borderColor: '#007BFF',
+        color: '#fff',
+    },
+    goToRoomButtonText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#fff',
+        textAlign: 'center',
     },
     searchBar: {
         height: 40,
@@ -279,6 +294,11 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginBottom: 10,
         paddingHorizontal: 10,
+        color: '#fff',
+    },
+    bottomContainer: {
+        flex: 1,
+        justifyContent: 'flex-end',
     },
 });
 

@@ -33,6 +33,7 @@ const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
     const { session, profile } = useAuth();
     const [swipeDirection, setSwipeDirection] = useState<string | null>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
+
     const [showTick, setShowTick] = useState(false);
     const [showCross, setShowCross] = useState(false);
     const [selectedGenreMovies, setSelectedGenreMovies] = useState<Movie[]>([]);
@@ -124,7 +125,7 @@ const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
         } finally {
             setTimeout(() => {
                 setShowTick(false);
-            }, 1000);
+            }, 500);
         }
     };
 
@@ -132,7 +133,7 @@ const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
         setShowCross(true);
         setTimeout(() => {
             setShowCross(false);
-        }, 1000);
+        }, 500);
     };
 
     const handleGenreSelect = (selectedMovies: Movie[]) => {
@@ -180,7 +181,7 @@ const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
             )}
 
             <DeckSwiper
-                backgroundColor={'lightgray'}
+                backgroundColor={'transparent'}
                 cards={(selectedGenreMovies.length > 0
                     ? selectedGenreMovies
                     : movies
@@ -253,9 +254,6 @@ const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'black',
         width: '100%',
         height: '100%',
     },
@@ -302,7 +300,7 @@ const styles = StyleSheet.create({
     },
     moviePlot: {
         fontSize: 16,
-        color: '#333',
+        color: '#111',
     },
     iconContainer: {
         position: 'absolute',
@@ -337,7 +335,7 @@ const styles = StyleSheet.create({
         top: 10,
         right: 10,
         padding: 10,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        backgroundColor: 'rgba(163, 163, 163, 0.5)',
         borderRadius: 20,
         zIndex: 1,
         shadowColor: '#000',

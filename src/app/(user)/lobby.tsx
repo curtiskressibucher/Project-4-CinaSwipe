@@ -1,19 +1,21 @@
-import { Text, View, StyleSheet } from 'react-native';
 import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import CreateRoomForm from '@/src/components/CreateRoomForm/CreateRoomForm';
 
 export default function Lobby() {
     return (
-        <View style={styles.container}>
+        <LinearGradient
+            colors={['#000428', '#004e92']}
+            style={styles.container}>
             <CreateRoomForm />
-        </View>
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'lightblue',
         padding: 20,
         justifyContent: 'center',
     },

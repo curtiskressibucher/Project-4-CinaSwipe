@@ -5,6 +5,7 @@ import MovieCardSwipe from '@/src/components/MovieCardSwipe/MovieCardSwipe';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { fetchPopularMovies } from '@/src/api/TmdbApi';
 import { Movie } from '@/src/types';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface Room {
     id: number;
@@ -61,32 +62,42 @@ export default function RoomDetail() {
             setLoading(false);
         }
     };
+
     if (loading) {
         return (
-            <View style={styles.container}>
+            <LinearGradient
+                colors={['#000428', '#004e92']}
+                style={styles.container}>
                 <ActivityIndicator size='large' color='white' />
-            </View>
+            </LinearGradient>
         );
     }
 
     return (
-        <View style={styles.container}>
-            <Stack.Screen options={{ title: room?.room_name }} />
-            <MovieCardSwipe movies={movies} roomId={room?.id ?? -1} />
-        </View>
+        <LinearGradient
+            colors={['#000428', '#004e92']}
+            style={styles.container}>
+            <View style={styles.contentContainer}>
+                <Stack.Screen options={{ title: room?.room_name }} />
+                <MovieCardSwipe movies={movies} roomId={room?.id ?? -1} />
+            </View>
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    contentContainer: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'black',
     },
     roomName: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
+        color: 'white',
     },
 });

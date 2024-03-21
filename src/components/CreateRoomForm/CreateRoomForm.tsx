@@ -4,9 +4,10 @@ import {
     View,
     Text,
     TextInput,
+    TouchableOpacity,
+    Modal,
     Button,
     Alert,
-    TouchableOpacity,
 } from 'react-native';
 import { useAuth } from '../../providers/AuthProviders';
 import { supabase } from '../../lib/supabase';
@@ -17,6 +18,7 @@ export default function CreateRoomForm() {
     const [roomName, setRoomName] = useState('');
     const [roomCreated, setRoomCreated] = useState(false);
     const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     const handleCreateRoom = async () => {
         try {
@@ -61,6 +63,7 @@ export default function CreateRoomForm() {
                 setRoomCreated(true);
                 setRoomName('');
                 setSelectedRoomId(newRoomId);
+                setIsModalVisible(false);
             }
         } catch (error) {
             Alert.alert('Error', 'Failed to create room. Please try again.');
@@ -69,74 +72,116 @@ export default function CreateRoomForm() {
 
     return (
         <View style={styles.container}>
-            {!roomCreated ? (
-                <>
-                    <Text style={styles.label}>Room Name:</Text>
+            <View style={styles.buttonsContainer}>
+                <TouchableOpacity style={[styles.button, styles.buttonBorder]}>
+                    <Link href={'/(user)/rooms/room-page'}>
+                        <Text style={styles.buttonText}>Search Rooms</Text>
+                    </Link>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={[styles.button, styles.buttonBorder]}
+                    onPress={() => setIsModalVisible(true)}>
+                    <Text style={styles.buttonText}>Make a Room</Text>
+                </TouchableOpacity>
+            </View>
+
+            <View style={styles.backHomeContainer}>
+                <TouchableOpacity
+                    style={[styles.backHomeButton, styles.buttonBorder]}>
+                    <Link href={'/'}>
+                        <Text style={styles.buttonText}>Back Home</Text>
+                    </Link>
+                </TouchableOpacity>
+            </View>
+
+            <Modal visible={isModalVisible} animationType='slide'>
+                <View style={styles.modalContainer}>
+                    <Text style={styles.modalLabel}>Room Name:</Text>
                     <TextInput
-                        style={styles.input}
+                        style={styles.modalInput}
                         placeholder='Enter Room Name'
                         value={roomName}
                         onChangeText={(text) => setRoomName(text)}
                     />
                     <Button title='Create Room' onPress={handleCreateRoom} />
-                </>
-            ) : (
-                <Redirect href={'/rooms/room-page'} />
-            )}
-
-            <TouchableOpacity style={styles.searchButton}>
-                <Link href={'/(user)/rooms/room-page'}>
-                    <Text style={styles.buttonText}>Search Rooms</Text>
-                </Link>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.button}>
-                <Link href={'/'}>
-                    <Text style={styles.buttonText}>Back home</Text>
-                </Link>
-            </TouchableOpacity>
+                    <Button
+                        title='Cancel'
+                        onPress={() => setIsModalVisible(false)}
+                    />
+                </View>
+            </Modal>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flexGrow: 1,
+        flex: 1,
         alignItems: 'center',
-        justifyContent: 'flex-start',
-        paddingVertical: 60,
-        paddingHorizontal: 20,
-        backgroundColor: 'lightblue',
-        position: 'relative',
+        justifyContent: 'space-between',
+        backgroundColor: 'transparent',
+        padding: 20,
     },
-    label: {
+    buttonsContainer: {
+        flexDirection: 'row',
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#FFFFFF',
+        padding: 20,
+        borderRadius: 10,
+    },
+    modalLabel: {
         fontSize: 18,
-        marginBottom: 5,
-        marginTop: 20,
+        marginBottom: 10,
+        color: '#333333',
     },
-    input: {
+    modalInput: {
         height: 40,
         width: '100%',
-        borderColor: 'gray',
+        borderColor: '#CCCCCC',
         borderWidth: 1,
         marginBottom: 20,
         paddingHorizontal: 10,
+        borderRadius: 5,
     },
     button: {
-        backgroundColor: 'lightgray',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-        marginTop: 20,
+        backgroundColor: '#33b249',
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 8,
+        marginBottom: 20,
+    },
+    buttonBorder: {
+        borderColor: 'black',
+        borderWidth: 1,
     },
     buttonText: {
-        fontSize: 16,
+        fontSize: 18,
+        color: '#333333',
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
     searchButton: {
-        backgroundColor: '#00ff48',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-        marginTop: 20,
+        backgroundColor: '#33b249',
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 8,
+        marginBottom: 20,
+    },
+    backHomeContainer: {
+        width: '100%',
+        marginBottom: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    backHomeButton: {
+        backgroundColor: '#D3D3D3',
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 8,
     },
 });

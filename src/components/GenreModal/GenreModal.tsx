@@ -30,13 +30,12 @@ const GenreModal = ({
     const [selectedGenre, setSelectedGenre] = useState<Genre | null>(null);
 
     const handleGenreSelection = async (genre: Genre) => {
-        // console.log('Selected genre:', genre.name);
+        console.log('Selected genre:', genre.name);
         setSelectedGenre(genre);
         onClose();
 
         try {
             const response = await fetchMoviesByGenre(genre.id);
-            // console.log('Movies for genre', genre.name + ':', response);
             onSelectGenre(response);
         } catch (error) {
             console.error('Error fetching movies:', error);
@@ -78,7 +77,7 @@ const styles = StyleSheet.create({
     },
     modalView: {
         margin: 20,
-        backgroundColor: 'white',
+        backgroundColor: 'rgb(0, 82, 145)',
         borderRadius: 20,
         padding: 35,
         alignItems: 'center',
@@ -96,7 +95,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 10,
         marginBottom: 10,
-        backgroundColor: '#008080',
+        backgroundColor: 'rgba(48, 210, 252, 0.569)',
         borderRadius: 20,
     },
     genreButtonText: {

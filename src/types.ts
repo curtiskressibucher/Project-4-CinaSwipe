@@ -10,6 +10,7 @@ export type Movie = {
     vote_average: number;
     vote_count: number;
     runtime: number;
+    genre: string;
 };
 
 export default Movie;

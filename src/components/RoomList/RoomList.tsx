@@ -56,8 +56,26 @@ const RoomList: React.FC<RoomListProps> = ({
     };
 
     const deleteRoom = async (roomId: number) => {
-        await supabase.from('rooms').delete().eq('id', roomId);
-        fetchRooms();
+        try {
+            const { data: userRoomEntries, error: userRoomError } =
+                await supabase
+                    .from('user_room')
+                    .select('user_id')
+                    .eq('room_id', roomId);
+
+            if (userRoomError) {
+                throw userRoomError;
+            }
+
+            await supabase.from('user_room').delete().eq('room_id', roomId);
+
+            // After deleting users, delete the room itself
+            await supabase.from('rooms').delete().eq('id', roomId);
+
+            fetchRooms(); // Refresh the room list after deletion
+        } catch (error) {
+            console.error(`Error deleting room with ID ${roomId}:`);
+        }
     };
 
     const renderRoomItem = ({ item }: { item: Room }) => (
