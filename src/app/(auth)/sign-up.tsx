@@ -4,6 +4,7 @@ import Button from '../../components/Button';
 import Colors from '../../constants/Colors';
 import { Link, Stack } from 'expo-router';
 import { supabase } from '../../lib/supabase';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const SignUpScreen = () => {
     const [fullName, setFullName] = useState('');
@@ -39,7 +40,9 @@ const SignUpScreen = () => {
     }
 
     return (
-        <View style={styles.container}>
+        <LinearGradient
+            colors={['#000428', '#004e92']}
+            style={styles.container}>
             <Stack.Screen options={{ title: 'Sign up' }} />
 
             <Text style={styles.label}>Full Name</Text>
@@ -75,7 +78,7 @@ const SignUpScreen = () => {
             <Link href='/sign-in' style={styles.textButton}>
                 Sign in
             </Link>
-        </View>
+        </LinearGradient>
     );
 };
 

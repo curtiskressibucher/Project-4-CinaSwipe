@@ -30,7 +30,6 @@ const GenreModal = ({
     const [selectedGenre, setSelectedGenre] = useState<Genre | null>(null);
 
     const handleGenreSelection = async (genre: Genre) => {
-        console.log('Selected genre:', genre.name);
         setSelectedGenre(genre);
         onClose();
 

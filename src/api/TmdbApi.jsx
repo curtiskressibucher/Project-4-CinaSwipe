@@ -55,3 +55,16 @@ export const fetchMovieDetailsById = async (movieId) => {
         throw error;
     }
 };
+
+export const fetchMovieById = async (movieId) => {
+    try {
+        const response = await fetch(
+            `${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US`
+        );
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(`Error fetching movie with ID ${movieId}: `, error);
+        throw error;
+    }
+};

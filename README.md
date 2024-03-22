@@ -78,8 +78,36 @@ https://trello.com/b/DU6hWJSK/project-4-cinaswipe
 
 https://www.figma.com/file/UFAzvIT42zk7CveOqkOOBo/Untitled?type=whiteboard&node-id=0-1&t=dV0GQnWQtew8vHnp-0
 
+## Features still to add
+
+### Google Authentication
+
+-   Implement Google authentication for secure and convenient user login.
+
+### Push Notifications
+
+-   Enable push notifications to promptly notify users when they match a movie.
+
+### Movie Reviews
+
+-   Allow users to add and leave reviews on movies.
+
+### Dynamic Movie Matching
+
+-   Enhance the movie matching algorithm to provide a more dynamic and engaging experience for users.
+
+### Location-Based Streaming
+
+-   Adding in streaming platforms for where users can steam their matched movies.
+
 ## Unsolved problems
 
----
+-   Cross-Platform Compatibility,
+    Ensuring consistent behavior and user experience across different platforms (iOS) remains a challenge.
+
+-   Expo SecureStore Issue,
+    Address the issue with Expo SecureStore causing application crashes when loading a websocket, ensuring stability and performance.
+
+#
 
 Thank you for choosing CinaSwipe! Happy movie swiping! 🎬

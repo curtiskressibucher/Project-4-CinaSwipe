@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useAuth } from '../../providers/AuthProviders';
 import { supabase } from '../../lib/supabase';
-import { Link } from 'expo-router';
+import { Link, Redirect } from 'expo-router';
 
 export default function CreateRoomForm() {
     const { session, profile } = useAuth();
@@ -71,6 +71,10 @@ export default function CreateRoomForm() {
             return null;
         }
     };
+
+    if (roomCreated && selectedRoomId) {
+        return <Redirect href={`/(user)/rooms/${selectedRoomId}`} />;
+    }
 
     return (
         <View style={styles.container}>

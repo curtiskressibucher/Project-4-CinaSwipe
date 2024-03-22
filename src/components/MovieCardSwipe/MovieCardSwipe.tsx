@@ -18,19 +18,25 @@ import genres from '@/assets/data/genres';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../providers/AuthProviders';
 
+// Default movie poster URL
 export const defaultMoviePoster =
     'http://www.staticwhich.co.uk/static/images/products/no-image/no-image-available.png';
 
+// Define props for MovieCardSwipe component
 type MovieCardSwipeProps = {
     movies: Movie[];
     roomId: number;
 };
 
+// Dimensions of the window
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
+    // Authentication context
     const { session, profile } = useAuth();
+
+    // States
     const [swipeDirection, setSwipeDirection] = useState<string | null>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [showTick, setShowTick] = useState(false);
@@ -39,8 +45,7 @@ const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
     const [reloadKey, setReloadKey] = useState(0);
     const overlayTranslateY = useRef(new Animated.Value(windowHeight)).current;
 
-    useEffect(() => {}, []);
-
+    // Function to check movie match
     const checkMovieMatch = async (movieId: number) => {
         const userId = session?.user?.id;
         const { data: likedMovies, error } = await supabase
@@ -61,6 +66,7 @@ const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
         return matchedUsers.length > 0;
     };
 
+    // Function when swiped right
     const onSwipedRight = async (movieId: number, roomId: number) => {
         setShowTick(true);
         try {
@@ -99,6 +105,8 @@ const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
             }, 500);
         }
     };
+
+    // Function when swiped left
     const onSwipedLeft = () => {
         setShowCross(true);
         setTimeout(() => {
@@ -106,15 +114,18 @@ const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
         }, 500);
     };
 
+    // Function to toggle modal visibility
     const toggleModal = () => {
         setIsModalVisible(!isModalVisible);
     };
 
+    // Function to handle genre selection
     const handleGenreSelect = (selectedMovies: Movie[]) => {
         setSelectedGenreMovies(selectedMovies);
         setReloadKey((prevKey) => prevKey + 1);
     };
 
+    // Function to handle card press
     const handleCardPress = () => {
         if ((overlayTranslateY as any)._value === 0) {
             Animated.timing(overlayTranslateY, {
@@ -261,7 +272,7 @@ const styles = StyleSheet.create({
     },
     overlay: {
         position: 'absolute',
-        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
         bottom: 0,
         left: 0,
         right: 0,

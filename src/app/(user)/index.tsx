@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Pressable, Alert } from 'react-native';
+import {
+    View,
+    StyleSheet,
+    Text,
+    Pressable,
+    Alert,
+    TouchableOpacity,
+} from 'react-native';
 import { useAuth } from '../../providers/AuthProviders';
 import { supabase } from '../../lib/supabase';
 import { Link, Redirect } from 'expo-router';
@@ -105,7 +112,7 @@ export default function HomeScreen() {
     };
 
     return !redirect && roomCreated ? (
-        <Redirect href={`/rooms/${selectedRoomId}`} />
+        <Redirect href={`/(user)/rooms/${selectedRoomId}`} />
     ) : (
         <LinearGradient
             colors={['#000428', '#004e92']}
@@ -114,11 +121,9 @@ export default function HomeScreen() {
             <Text style={styles.welcomeSubtitle}>
                 Welcome to CinaSwipe! Experience the thrill of movie discovery
                 with our innovative app that combines the simplicity of swiping
-                with a vast library of films from all genres. Simply swipe
-                through personalized recommendations, connect with fellow film
-                enthusiasts, and find your next movie obsession in no time. Say
-                goodbye to endless scrolling and hello to your cinematic
-                soulmate with CinaSwipe!
+                with a vast library of films from all genres. Say goodbye to
+                endless scrolling and hello to your cinematic soulmate with
+                CinaSwipe!
             </Text>
             <Pressable
                 onPress={handleStartSwiping}
@@ -129,6 +134,11 @@ export default function HomeScreen() {
                 ]}>
                 <Text style={styles.buttonText}>Start Swiping!</Text>
             </Pressable>
+            <Link href={'/(user)/movies'} asChild>
+                <TouchableOpacity>
+                    <Text style={styles.buttonText}>Matched Movies</Text>
+                </TouchableOpacity>
+            </Link>
         </LinearGradient>
     );
 }

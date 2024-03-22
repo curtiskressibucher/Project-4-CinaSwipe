@@ -144,7 +144,7 @@ const RoomList: React.FC<RoomListProps> = ({
 
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>Room List:</Text>
+            <Text style={styles.header}>Room List</Text>
             <FlatList
                 data={rooms}
                 renderItem={renderRoomItem}
@@ -185,12 +185,13 @@ const RoomList: React.FC<RoomListProps> = ({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'lightgray',
+        backgroundColor: 'transparent',
     },
     header: {
         fontWeight: 'bold',
         fontSize: 18,
         marginBottom: 10,
+        color: 'white',
     },
     roomItemContainer: {
         flexDirection: 'row',
@@ -201,7 +202,9 @@ const styles = StyleSheet.create({
         borderBottomColor: '#ccc',
     },
     roomName: {
-        fontSize: 16,
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: 'white',
     },
     deleteButton: {
         backgroundColor: 'red',

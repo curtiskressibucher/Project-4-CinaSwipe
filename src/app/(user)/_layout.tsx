@@ -40,6 +40,10 @@ export default function TabLayout() {
                 name='rooms'
                 options={{ href: null, headerShown: false }}
             />
+            <Tabs.Screen
+                name='rooms copy'
+                options={{ href: null, headerShown: false }}
+            />
 
             <Tabs.Screen
                 name='index'

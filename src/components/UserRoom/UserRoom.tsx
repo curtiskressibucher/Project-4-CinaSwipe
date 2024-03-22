@@ -81,7 +81,7 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
 
             setUsers(usersData || []);
         } catch (error) {
-            console.error('Error fetching users in room:', error);
+            console.error('Error fetching users in room', error);
         }
     };
 
@@ -141,6 +141,7 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
         try {
             await supabase
                 .from('user_room')
+                // Added in update if we want to keep the user in the room but inactive or keep history of users in the room
                 // .update({ active: null })
                 .delete()
                 .eq('room_id', roomId)
@@ -169,7 +170,7 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
                     <Text style={styles.roomName}>{userRoom.room_name}</Text>
                     <View style={styles.goToRoomContainer}>
                         <TouchableOpacity style={styles.goToRoomButton}>
-                            <Link href={`/rooms/${userRoom.id}`} asChild>
+                            <Link href={`/(user)/rooms/${userRoom.id}`} asChild>
                                 <Text style={styles.goToRoomButtonText}>
                                     Movie Match!
                                 </Text>
@@ -219,7 +220,10 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
                                         }
                                         renderItem={({ item }) => (
                                             <View style={styles.userContainer}>
-                                                <Text style={styles.userName}>
+                                                <Text
+                                                    style={
+                                                        styles.modalUserName
+                                                    }>
                                                     {item.full_name}
                                                 </Text>
                                                 <TouchableOpacity
@@ -259,13 +263,13 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: 'lightgray',
+        backgroundColor: 'transparent',
     },
     roomName: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: 'black',
+        color: 'white',
     },
     userContainer: {
         flexDirection: 'row',
@@ -273,6 +277,11 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     userName: {
+        flex: 1,
+        fontSize: 18,
+        color: 'white',
+    },
+    modalUserName: {
         flex: 1,
         fontSize: 18,
         color: 'black',
