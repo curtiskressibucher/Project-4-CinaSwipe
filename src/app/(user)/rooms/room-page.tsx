@@ -3,9 +3,8 @@ import { StyleSheet, View, Text } from 'react-native';
 import RoomList from '../../../components/RoomList/RoomList';
 import UserRoom from '../../../components/UserRoom/UserRoom';
 import { useAuth } from '../../../providers/AuthProviders';
-import { Redirect } from 'expo-router';
 
-export default function RoomPage({}) {
+export default function RoomPage() {
     const { profile } = useAuth();
     const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
     const [roomCreated, setRoomCreated] = useState(true);

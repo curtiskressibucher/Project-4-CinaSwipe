@@ -58,7 +58,7 @@ export default function HomeScreen() {
                     await supabase.from('rooms').insert([
                         {
                             room_name: roomName,
-                            creator_id: profile.id,
+                            creator_id: session?.user.id,
                             created_at: new Date(),
                         },
                     ]);
@@ -71,7 +71,7 @@ export default function HomeScreen() {
                     const { data } = await supabase
                         .from('rooms')
                         .select('*')
-                        .eq('creator_id', profile.id)
+                        .eq('creator_id', session?.user.id)
                         .order('created_at', { ascending: false })
                         .limit(1);
                     return data;
@@ -85,8 +85,9 @@ export default function HomeScreen() {
                         error: userRoomInsertError,
                     } = await supabase.from('user_room').insert([
                         {
-                            user_id: profile.id,
+                            user_id: session?.user.id,
                             room_id: newRoomId,
+                            active: true,
                         },
                     ]);
 
@@ -110,6 +111,15 @@ export default function HomeScreen() {
             colors={['#000428', '#004e92']}
             style={styles.pageContainer}>
             <Text style={styles.title}>CinaSwipe</Text>
+            <Text style={styles.welcomeSubtitle}>
+                Welcome to CinaSwipe! Experience the thrill of movie discovery
+                with our innovative app that combines the simplicity of swiping
+                with a vast library of films from all genres. Simply swipe
+                through personalized recommendations, connect with fellow film
+                enthusiasts, and find your next movie obsession in no time. Say
+                goodbye to endless scrolling and hello to your cinematic
+                soulmate with CinaSwipe!
+            </Text>
             <Pressable
                 onPress={handleStartSwiping}
                 style={({ pressed }) => [
@@ -133,7 +143,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 36,
         fontWeight: 'bold',
-        marginBottom: 40,
+
         color: '#fff',
         textAlign: 'center',
         textTransform: 'uppercase',
@@ -157,6 +167,15 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     buttonPressed: {
-        backgroundColor: '#0056b3', // darker shade when pressed
+        backgroundColor: '#0056b3',
+    },
+    welcomeSubtitle: {
+        fontSize: 14,
+        color: '#fff',
+        marginTop: 20,
+        lineHeight: 24,
+        textAlign: 'center',
+        paddingHorizontal: 20,
+        marginBottom: 60,
     },
 });

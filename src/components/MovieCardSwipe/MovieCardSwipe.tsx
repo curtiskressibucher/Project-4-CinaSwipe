@@ -33,61 +33,32 @@ const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
     const { session, profile } = useAuth();
     const [swipeDirection, setSwipeDirection] = useState<string | null>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
-
     const [showTick, setShowTick] = useState(false);
     const [showCross, setShowCross] = useState(false);
     const [selectedGenreMovies, setSelectedGenreMovies] = useState<Movie[]>([]);
     const [reloadKey, setReloadKey] = useState(0);
-    const [likedMovies, setLikedMovies] = useState<any[]>([]);
     const overlayTranslateY = useRef(new Animated.Value(windowHeight)).current;
 
-    useEffect(() => {
-        fetchLikedMovies();
-    }, [roomId]);
+    useEffect(() => {}, []);
 
-    const fetchLikedMovies = async () => {
-        const { data, error } = await supabase
+    const checkMovieMatch = async (movieId: number) => {
+        const userId = session?.user?.id;
+        const { data: likedMovies, error } = await supabase
             .from('movie_match')
             .select('liked_movie_id, user_id')
             .eq('room_id', roomId);
 
         if (error) {
-            console.error('Error fetching liked movies:', error.message);
+            console.error('Error fetching liked movies');
             return;
         }
 
-        if (data) {
-            setLikedMovies(data);
-        }
-    };
-
-    const checkMovieMatch = async (movieId: number) => {
-        const userId = session?.user?.id;
         const matchedUsers = likedMovies.filter(
             (match) =>
                 match.liked_movie_id === movieId && match.user_id !== userId
         );
 
-        if (matchedUsers.length > 0) {
-            // Match found
-            const matchedUsernames = matchedUsers
-                .map((user) => user.username)
-                .join(', ');
-            Alert.alert(
-                'Matched!',
-                '',
-                [
-                    {
-                        text: 'OK',
-                    },
-                ],
-                { cancelable: false }
-            );
-        }
-    };
-
-    const toggleModal = () => {
-        setIsModalVisible(!isModalVisible);
+        return matchedUsers.length > 0;
     };
 
     const onSwipedRight = async (movieId: number, roomId: number) => {
@@ -95,10 +66,10 @@ const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
         try {
             const userId = session?.user?.id;
             const isMatch = await checkMovieMatch(movieId);
-            if (isMatch !== undefined) {
+            if (isMatch) {
                 Alert.alert(
-                    'Matched!',
-                    '   ',
+                    'Movie Matched!',
+                    '',
                     [
                         {
                             text: 'OK',
@@ -117,18 +88,17 @@ const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
                 },
             ]);
             if (error) {
-                console.error('Error inserting data:', error.message);
+                console.error('Error inserting data', error.message);
                 return;
             }
         } catch (error) {
-            console.error('Error inserting data:');
+            console.error('Error inserting data', error);
         } finally {
             setTimeout(() => {
                 setShowTick(false);
             }, 500);
         }
     };
-
     const onSwipedLeft = () => {
         setShowCross(true);
         setTimeout(() => {
@@ -136,9 +106,12 @@ const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
         }, 500);
     };
 
+    const toggleModal = () => {
+        setIsModalVisible(!isModalVisible);
+    };
+
     const handleGenreSelect = (selectedMovies: Movie[]) => {
         setSelectedGenreMovies(selectedMovies);
-        // console.log('Selected genre movies:', selectedMovies);
         setReloadKey((prevKey) => prevKey + 1);
     };
 
@@ -169,6 +142,12 @@ const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
                 genres={genres}
                 onSelectGenre={handleGenreSelect}
             />
+            <Link href={'/(user)/rooms/room-page'} asChild>
+                <TouchableOpacity style={styles.newButton}>
+                    <Text style={styles.newButtonText}>Add Friends</Text>
+                </TouchableOpacity>
+            </Link>
+
             {showTick && (
                 <View style={styles.iconContainer}>
                     <Text style={[styles.icon, styles.green]}>✓</Text>
@@ -190,7 +169,7 @@ const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
                     poster: movie.poster_path
                         ? `https://image.tmdb.org/t/p/original/${movie.poster_path}`
                         : defaultMoviePoster,
-                    movieId: movie.id, // Use movie.id instead of index.toString()
+                    movieId: movie.id,
                     name: movie.title,
                     year: movie.release_date,
                     plot: movie.overview,
@@ -348,6 +327,28 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     genreButtonText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#fff',
+    },
+    newButton: {
+        position: 'absolute',
+        top: 10,
+        left: 10,
+        padding: 10,
+        backgroundColor: 'rgba(163, 163, 163, 0.5)',
+        borderRadius: 20,
+        zIndex: 1,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    newButtonText: {
         fontSize: 16,
         fontWeight: 'bold',
         color: '#fff',

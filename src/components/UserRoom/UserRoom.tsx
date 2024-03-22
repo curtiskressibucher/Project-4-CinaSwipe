@@ -7,6 +7,8 @@ import {
     StyleSheet,
     TextInput,
     TouchableOpacity,
+    Alert,
+    Modal,
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../providers/AuthProviders';
@@ -25,6 +27,7 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
     const [fetchedUsers, setFetchedUsers] = useState<any[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
         fetchUserRoom();
@@ -76,8 +79,6 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
                 throw usersError;
             }
 
-            console.log('Active users in the room:', usersData || []);
-
             setUsers(usersData || []);
         } catch (error) {
             console.error('Error fetching users in room:', error);
@@ -112,7 +113,7 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
                     .single();
 
             if (existingMembership) {
-                console.log('User is already a member of the room');
+                Alert.alert('User is already in the room');
                 return;
             }
 
@@ -125,15 +126,14 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
 
             if (newMembershipError) {
                 console.error(
-                    'Error inviting user:',
+                    'Error inviting user',
                     newMembershipError.message
                 );
                 return;
             }
-            console.log('User invited successfully');
             fetchUsersInRoom();
         } catch (error) {
-            console.error('Error inviting user:', error);
+            console.error('Error inviting user', error);
         }
     };
 
@@ -147,10 +147,9 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
                 .eq('user_id', userId);
 
             fetchUsers();
-            console.log('Left room successfully');
             onLeaveRoom();
         } catch (error) {
-            console.error('Error leaving room:', error);
+            console.error('Error leaving room', error);
         }
     };
 
@@ -167,13 +166,15 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
         <View style={styles.container}>
             {userRoom ? (
                 <>
-                    <Text style={styles.roomName}>{userRoom.room_name}!</Text>
+                    <Text style={styles.roomName}>{userRoom.room_name}</Text>
                     <View style={styles.goToRoomContainer}>
-                        <Link href={`/rooms/${userRoom.id}`} asChild>
-                            <Text style={styles.goToRoomButton}>
-                                Movie Match!
-                            </Text>
-                        </Link>
+                        <TouchableOpacity style={styles.goToRoomButton}>
+                            <Link href={`/rooms/${userRoom.id}`} asChild>
+                                <Text style={styles.goToRoomButtonText}>
+                                    Movie Match!
+                                </Text>
+                            </Link>
+                        </TouchableOpacity>
                     </View>
                     <FlatList
                         data={users}
@@ -192,30 +193,57 @@ const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
                         )}
                     />
                     <View style={styles.bottomContainer}>
-                        <TextInput
-                            style={styles.searchBar}
-                            placeholder='Search users...'
-                            onChangeText={handleSearch}
-                            value={searchQuery}
+                        <Button
+                            title='Invite User'
+                            onPress={() => setModalVisible(true)}
                         />
-                        <FlatList
-                            data={searchResults}
-                            keyExtractor={(item) => item.id.toString()}
-                            renderItem={({ item }) => (
-                                <View style={styles.userContainer}>
-                                    <Text style={styles.userName}>
-                                        {item.full_name}
-                                    </Text>
-                                    <TouchableOpacity
-                                        onPress={() => inviteUser(item.id)}
-                                        style={styles.inviteButton}>
-                                        <Text style={styles.buttonText}>
-                                            Invite
-                                        </Text>
-                                    </TouchableOpacity>
+                        <Modal
+                            animationType='slide'
+                            transparent={true}
+                            visible={modalVisible}
+                            onRequestClose={() => {
+                                setModalVisible(false);
+                            }}>
+                            <View style={styles.modalContainer}>
+                                <View style={styles.modalContent}>
+                                    <TextInput
+                                        style={styles.searchBar}
+                                        placeholder='Find Friends'
+                                        onChangeText={handleSearch}
+                                        value={searchQuery}
+                                    />
+                                    <FlatList
+                                        data={searchResults}
+                                        keyExtractor={(item) =>
+                                            item.id.toString()
+                                        }
+                                        renderItem={({ item }) => (
+                                            <View style={styles.userContainer}>
+                                                <Text style={styles.userName}>
+                                                    {item.full_name}
+                                                </Text>
+                                                <TouchableOpacity
+                                                    onPress={() =>
+                                                        inviteUser(item.id)
+                                                    }
+                                                    style={styles.inviteButton}>
+                                                    <Text
+                                                        style={
+                                                            styles.buttonText
+                                                        }>
+                                                        Invite
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        )}
+                                    />
+                                    <Button
+                                        title='Close'
+                                        onPress={() => setModalVisible(false)}
+                                    />
                                 </View>
-                            )}
-                        />
+                            </View>
+                        </Modal>
                     </View>
                 </>
             ) : (
@@ -294,11 +322,24 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginBottom: 10,
         paddingHorizontal: 10,
-        color: '#fff',
+        color: 'black',
     },
     bottomContainer: {
         flex: 1,
         justifyContent: 'flex-end',
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 10,
+        width: '80%',
+        color: '#fff',
     },
 });
 

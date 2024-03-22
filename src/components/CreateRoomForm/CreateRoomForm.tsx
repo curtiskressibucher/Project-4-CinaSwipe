@@ -11,10 +11,10 @@ import {
 } from 'react-native';
 import { useAuth } from '../../providers/AuthProviders';
 import { supabase } from '../../lib/supabase';
-import { Link, Redirect } from 'expo-router';
+import { Link } from 'expo-router';
 
 export default function CreateRoomForm() {
-    const { profile } = useAuth();
+    const { session, profile } = useAuth();
     const [roomName, setRoomName] = useState('');
     const [roomCreated, setRoomCreated] = useState(false);
     const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
@@ -26,12 +26,12 @@ export default function CreateRoomForm() {
                 await supabase.from('rooms').insert([
                     {
                         room_name: roomName,
-                        creator_id: profile.id,
+                        creator_id: session?.user.id,
                         created_at: new Date(),
                     },
                 ]);
             if (roomInsertError) {
-                return;
+                return null;
             }
 
             const roomData = await fetchUserRoom();
@@ -39,7 +39,7 @@ export default function CreateRoomForm() {
                 const { data } = await supabase
                     .from('rooms')
                     .select('*')
-                    .eq('creator_id', profile.id)
+                    .eq('creator_id', session?.user.id)
                     .order('created_at', { ascending: false })
                     .limit(1);
                 return data;
@@ -51,13 +51,14 @@ export default function CreateRoomForm() {
                 const { data: userRoomInsertData, error: userRoomInsertError } =
                     await supabase.from('user_room').insert([
                         {
-                            user_id: profile.id,
+                            user_id: session?.user.id,
                             room_id: newRoomId,
+                            active: true,
                         },
                     ]);
 
                 if (userRoomInsertError) {
-                    return;
+                    return null;
                 }
 
                 setRoomCreated(true);
@@ -67,14 +68,16 @@ export default function CreateRoomForm() {
             }
         } catch (error) {
             Alert.alert('Error', 'Failed to create room. Please try again.');
+            return null;
         }
     };
 
     return (
         <View style={styles.container}>
             <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={[styles.button, styles.buttonBorder]}>
-                    <Link href={'/(user)/rooms/room-page'}>
+                <TouchableOpacity
+                    style={[styles.searchButton, styles.buttonBorder]}>
+                    <Link href={'/(user)/rooms/room-page'} asChild>
                         <Text style={styles.buttonText}>Search Rooms</Text>
                     </Link>
                 </TouchableOpacity>
@@ -85,30 +88,38 @@ export default function CreateRoomForm() {
                     <Text style={styles.buttonText}>Make a Room</Text>
                 </TouchableOpacity>
             </View>
+            <Modal
+                visible={isModalVisible}
+                animationType='slide'
+                transparent={true}
+                onRequestClose={() => setIsModalVisible(false)}>
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContainer}>
+                        <Text style={styles.modalLabel}>Room Name:</Text>
+                        <TextInput
+                            style={styles.modalInput}
+                            placeholder='Enter Room Name'
+                            value={roomName}
+                            onChangeText={(text) => setRoomName(text)}
+                        />
 
-            <View style={styles.backHomeContainer}>
-                <TouchableOpacity
-                    style={[styles.backHomeButton, styles.buttonBorder]}>
-                    <Link href={'/'}>
-                        <Text style={styles.buttonText}>Back Home</Text>
-                    </Link>
-                </TouchableOpacity>
-            </View>
-
-            <Modal visible={isModalVisible} animationType='slide'>
-                <View style={styles.modalContainer}>
-                    <Text style={styles.modalLabel}>Room Name:</Text>
-                    <TextInput
-                        style={styles.modalInput}
-                        placeholder='Enter Room Name'
-                        value={roomName}
-                        onChangeText={(text) => setRoomName(text)}
-                    />
-                    <Button title='Create Room' onPress={handleCreateRoom} />
-                    <Button
-                        title='Cancel'
-                        onPress={() => setIsModalVisible(false)}
-                    />
+                        <View style={styles.modalButtonsContainer}>
+                            <TouchableOpacity
+                                style={styles.modalButton}
+                                onPress={handleCreateRoom}>
+                                <Text style={styles.modalButtonText}>
+                                    Create Room
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.modalButton}
+                                onPress={() => setIsModalVisible(false)}>
+                                <Text style={styles.modalButtonText}>
+                                    Cancel
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
                 </View>
             </Modal>
         </View>
@@ -119,20 +130,24 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         backgroundColor: 'transparent',
         padding: 20,
     },
     buttonsContainer: {
         flexDirection: 'row',
     },
-    modalContainer: {
+    modalOverlay: {
         flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    modalContainer: {
         backgroundColor: '#FFFFFF',
-        padding: 20,
         borderRadius: 10,
+        padding: 20,
+        width: '80%',
     },
     modalLabel: {
         fontSize: 18,
@@ -149,7 +164,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     button: {
-        backgroundColor: '#33b249',
+        backgroundColor: '#0a93fc',
         paddingVertical: 12,
         paddingHorizontal: 30,
         borderRadius: 8,
@@ -161,7 +176,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 18,
-        color: '#333333',
+        color: 'white',
         fontWeight: 'bold',
         textAlign: 'center',
     },
@@ -172,16 +187,21 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 20,
     },
-    backHomeContainer: {
-        width: '100%',
-        marginBottom: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
+    modalButtonsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
     },
-    backHomeButton: {
-        backgroundColor: '#D3D3D3',
+    modalButton: {
+        backgroundColor: '#33b249',
         paddingVertical: 12,
         paddingHorizontal: 30,
         borderRadius: 8,
+        marginBottom: 10,
+    },
+    modalButtonText: {
+        fontSize: 18,
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
 });
