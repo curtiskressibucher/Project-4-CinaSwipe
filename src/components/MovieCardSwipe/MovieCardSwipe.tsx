@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     View,
     StyleSheet,
@@ -43,6 +43,7 @@ const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
     const [showCross, setShowCross] = useState(false);
     const [selectedGenreMovies, setSelectedGenreMovies] = useState<Movie[]>([]);
     const [reloadKey, setReloadKey] = useState(0);
+    // First time using useRef for the overlay animation
     const overlayTranslateY = useRef(new Animated.Value(windowHeight)).current;
 
     // Function to check movie match
@@ -62,7 +63,6 @@ const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
             (match) =>
                 match.liked_movie_id === movieId && match.user_id !== userId
         );
-
         return matchedUsers.length > 0;
     };
 
@@ -236,6 +236,8 @@ const MovieCardSwipe = ({ movies, roomId }: MovieCardSwipeProps) => {
                 stackSize={5}
                 stackSeparation={20}
                 stackScale={5}
+                stackAnimationFriction={7}
+                animateCardOpacity={true}
             />
         </View>
     );

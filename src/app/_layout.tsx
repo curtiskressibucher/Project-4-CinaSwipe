@@ -53,7 +53,7 @@ function RootLayoutNav() {
 
     return (
         <ThemeProvider
-            value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
+            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <AuthProvider>
                 <Stack>
                     <Stack.Screen

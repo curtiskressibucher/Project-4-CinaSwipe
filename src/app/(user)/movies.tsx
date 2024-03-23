@@ -20,6 +20,11 @@ export default function MovieList() {
 
     useEffect(() => {
         fetchMovieMatches();
+        // Polling caused a bug in the app, so it was removed.
+        // const interval = setInterval(() => {
+        //     fetchMovieMatches();
+        // }, 10000);
+        // return () => clearInterval(interval);
     }, []);
 
     const fetchMovieMatches = async () => {
@@ -33,7 +38,6 @@ export default function MovieList() {
                     .eq('user_id', profile.id);
 
             if (movieMatchesError) {
-                console.log(movieMatchesError);
                 throw movieMatchesError;
             }
 
@@ -57,7 +61,7 @@ export default function MovieList() {
                     );
                     return {
                         ...match,
-                        movie_details: movieDetails, // Attach movie details to the match object
+                        movie_details: movieDetails,
                         room_name: room ? room.room_name : 'Unknown',
                     };
                 })
@@ -90,7 +94,6 @@ export default function MovieList() {
                     <Text style={styles.movieReleaseDate}>
                         Release Date: {item.movie_details.release_date}
                     </Text>
-                    {/* You can display more details as needed */}
                 </View>
             )}
         </View>

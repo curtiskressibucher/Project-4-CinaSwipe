@@ -20,8 +20,9 @@ type UserRoomProps = {
     onLeaveRoom: () => void;
 };
 
-const UserRoom: React.FC<UserRoomProps> = ({ roomId, onLeaveRoom }) => {
-    const { session, loading, profile } = useAuth();
+const UserRoom = ({ roomId, onLeaveRoom }: UserRoomProps) => {
+    // Authentication context
+    const { profile } = useAuth();
     const [userRoom, setUserRoom] = useState<any>(null);
     const [users, setUsers] = useState<any[]>([]);
     const [fetchedUsers, setFetchedUsers] = useState<any[]>([]);

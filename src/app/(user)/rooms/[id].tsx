@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { supabase } from '../../../lib/supabase';
 import MovieCardSwipe from '@/src/components/MovieCardSwipe/MovieCardSwipe';
 import { Stack, useLocalSearchParams } from 'expo-router';

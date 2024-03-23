@@ -20,15 +20,18 @@ type RoomListProps = {
     profile: any;
     selectedRoomId: number | null;
     onRoomSelect: (roomId: number) => void;
+    // React dispatch is a function provided by the React Context API that allows components to dispatch actions to update the state.
     setRoomCreated: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const RoomList: React.FC<RoomListProps> = ({
+const RoomList = ({
     selectedRoomId,
     onRoomSelect,
     setRoomCreated,
-}) => {
+}: RoomListProps) => {
+    // Authentication context
     const { session, profile } = useAuth();
+    // State variables
     const [rooms, setRooms] = useState<any[]>([]);
     const [userRooms, setUserRooms] = useState<any[]>([]);
     const [showModal, setShowModal] = useState(false);
@@ -58,7 +61,7 @@ const RoomList: React.FC<RoomListProps> = ({
 
             setUserRooms(data.map((entry: any) => entry.room_id));
         } catch (error) {
-            console.error('Error fetching user rooms:');
+            console.error('Error fetching user rooms');
         }
     };
 

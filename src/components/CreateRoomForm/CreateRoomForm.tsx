@@ -14,7 +14,9 @@ import { supabase } from '../../lib/supabase';
 import { Link, Redirect } from 'expo-router';
 
 export default function CreateRoomForm() {
+    // Authentication context
     const { session, profile } = useAuth();
+    // State variables
     const [roomName, setRoomName] = useState('');
     const [roomCreated, setRoomCreated] = useState(false);
     const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);

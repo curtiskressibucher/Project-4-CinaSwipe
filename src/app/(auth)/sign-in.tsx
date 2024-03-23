@@ -51,9 +51,12 @@ const SignInScreen = () => {
                     disabled={loading}
                     text={loading ? 'Signing in...' : 'Sign in'}
                 />
-                <Link href='/sign-up' style={styles.textButton}>
-                    Create an account
-                </Link>
+                <View style={styles.textContainer}>
+                    <Text style={styles.text}>Don't have an account yet? </Text>
+                    <Link href='/sign-up' style={styles.textButton}>
+                        Create an account
+                    </Link>
+                </View>
             </View>
         </LinearGradient>
     );
@@ -82,6 +85,15 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: Colors.light.tint,
         marginVertical: 10,
+    },
+    textContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 10,
+    },
+    text: {
+        color: 'white',
     },
 });
 
